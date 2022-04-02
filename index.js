@@ -97,7 +97,7 @@ const convertData = async (text) => {
 	console.log("Replacing String.join(Array) statements...");
 	reg = /(\w+)\.join\((.*?)\)/;
 	matches = 1;
-	while(matches > 0){ // len() functions
+	while(matches > 0){ // String.Join makes no fucking sense python
 		const textMatch = text.match(reg);
 		if(!textMatch || textMatch?.length === 0) break;
 
