@@ -10,6 +10,6 @@ More or less works, personal use mostly, your experience may vary depending on c
 2. Rename it "file.py"
 3. Run script using node.js
 4. ????
-5. Output will be in a file named "pseudo.text"
+5. Output will be in a file named "pseudo.txt"
 6. ~~Say fuck you to teachers for thinking this shit is relevent to your assignment~~
 7. Profit 
