@@ -23,11 +23,12 @@ const convertData = async (text) => {
 		.replace(/;$/gm, "") // Remove all ';' from end of lines
 		.replace(/"""(.|\n|\r|\r\n)*?"""/g, "") // Remove all docstrings
 		.replace(/^\t+\w+: \w+$/gm, "") // Remove any type setters
-		.replace(/\s-> .*?:/, ":") // Remove all function output types
+		.replace(/\s->\s.*?:/g, ":") // Remove all function output types
 		.replace(/^\s+$/gm, "") // Remove any whitespace on otherwise empty lines
 		.replace(/\n{2,}/g, "\n") // Remove any multi line gaps
 
 		// Simple word subtitution
+		.replace(/for/g, "FOR") // for loops
 		.replace(/continue/g, "NEXT ITERATION\n") // continue Statements
 		.replace(/break/g, "END LOOP\n") // continue Statements
 		.replace(/return/g, "RETURN") // return Statements
@@ -36,7 +37,7 @@ const convertData = async (text) => {
 		.replace(/print\(/g, "OUTPUT(") // Print statements
 		.replace(/input\(/g, "INPUT(") // Input statements
 		.replace(/eval\(/g, "EVAL(") // Eval functions
-		.replace(/\.append\(/g, ".add") // Append -> 'add"
+		.replace(/\.append\(/g, ".add(") // Append -> 'add"
 		.replace(/import/g, "IMPORT") // Imports
 		.replace(/re/g, "REGEX"); // Regular Expressions
 
@@ -101,7 +102,7 @@ const convertData = async (text) => {
 		const textMatch = text.match(reg);
 		if(!textMatch || textMatch?.length === 0) break;
 
-		text = text.replace(textMatch[0], `${textMatch[2]} JOIN WITH ${textMatch[1]}`);
+		text = text.replace(textMatch[0], `${textMatch[2]} JOINED WITH ${textMatch[1]}`);
 
 		matches = (text.match(reg)?.length || 0);
 	}
