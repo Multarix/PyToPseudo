@@ -1,7 +1,7 @@
 # PyToPseudo
 More or less works, personal use mostly, your experience may vary depending on complexity<br>
 ## Requirements
-- A brain
+- A Brain (Tough I know)
 - Node.js
 
 
