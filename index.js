@@ -29,9 +29,8 @@ const convertData = async (text) => {
 
 		// Simple word subtitution
 		.replace(/for/g, "FOR") // for loops
-		.replace(/class/g, "DEFINE CLASS") // for loops
-		.replace(/continue/g, "NEXT ITERATION\n") // continue Statements
-		.replace(/break/g, "END LOOP\n") // continue Statements
+		.replace(/continue/g, "NEXT ITERATION") // continue Statements
+		.replace(/break/g, "END LOOP") // continue Statements
 		.replace(/return/g, "RETURN") // return Statements
 		.replace(/else/g, "ELSE") // else Statements
 		.replace(/ in /g, " IN ") // "in" statements
@@ -121,18 +120,33 @@ const convertData = async (text) => {
 		matches = (text.match(reg)?.length || 0);
 	}
 
+
+	await wait(100);
+	console.log("Editing functions...");
+	reg = /((^(\t+| +)?def .*?$)(.|\s)*?)(^\3\w)/m; // The actual fuck is this regex ahahaha
+	matches = 1;
+	while(matches > 0){ // Add a newline before and after each function
+		const textMatch = text.match(reg);
+		
+		text = text.replace(textMatch[1], `\n${textMatch[1].replace("def", "DEFINE FUNCTION")}\n`);
+
+		matches = text.match(reg)?.length || 0;
+	}
+
+	await wait(100);
+	console.log("Editing Classes...");
+	reg = /((^(\t+| +)?class .*?$)(.|\s)*?)(^\3\w)/m;
+	matches = 1;
+	while(matches > 0){ // Add a newline before and after each function
+		const textMatch = text.match(reg);
+		
+		text = text.replace(textMatch[1], `\n${textMatch[1].replace("class", "DEFINE CLASS")}\n`);
+
+		matches = text.match(reg)?.length || 0;
+	}
+
 	await wait(100);
 	console.log("Adding spaces...");
-	reg = /(\s+)?def((.|\n|\r|\r\n)*?\n)(\w)/;
-	matches = 1;
-	while(matches > 0){ // Add a space before and after all functions
-		const textMatch = text.match(reg);
-		if(!textMatch || textMatch?.length === 0) break;
-
-		text = text.replace(textMatch[0], `\n\n${textMatch[1]}DECLARE FUNCTION${textMatch[2]}\n\n${textMatch[4]}`);
-
-		matches = (text.match(reg)?.length || 0);
-	}
 
 	text = text.replace(/\n/g, "\n\n"); // Add a gap between all lines
 	text = text.replace(/(\n|\r|\r\n){4,4}/g, "\n\n") // Fix up big gaps
@@ -140,7 +154,7 @@ const convertData = async (text) => {
 		.replace(/(\n|\r|\r\n){5}/g, "\n\n\n\n")
 		.replace(/^/, "Converted via PyToPseudo - https://github.com/Multarix/PyToPseudo\n\n");
 
-	await wait(100);
+	
 	return text;
 };
 
@@ -149,3 +163,4 @@ convertData(originalScript).then(txt => {
 	fs.writeFileSync("pseudo.txt", txt, { encoding: "utf8" });
 	console.log("Done!");
 });
+
