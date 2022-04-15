@@ -25,10 +25,11 @@ const convertData = async (text) => {
 		.replace(/^\t+\w+: \w+$/gm, "") // Remove any type setters
 		.replace(/\s->\s.*?:/g, ":") // Remove all function output types
 		.replace(/^\s+$/gm, "") // Remove any whitespace on otherwise empty lines
-		.replace(/\n{2,}/g, "\n") // Remove any multi line gaps
+		.replace(/(\n|\r|\r\n){2,}/g, "\n") // Remove any multi line gaps
 
 		// Simple word subtitution
 		.replace(/for/g, "FOR") // for loops
+		.replace(/class/g, "DEFINE CLASS") // for loops
 		.replace(/continue/g, "NEXT ITERATION\n") // continue Statements
 		.replace(/break/g, "END LOOP\n") // continue Statements
 		.replace(/return/g, "RETURN") // return Statements
@@ -42,10 +43,23 @@ const convertData = async (text) => {
 		.replace(/re/g, "REGEX"); // Regular Expressions
 
 
-	await wait(300);
-	console.log("Replacing variables...");
-	let reg = /(\w[a-zA-Z0-9]+)\s?=\s?/;
+	await wait(100);
+	console.log("Replacing function type setters...");
+	let reg = /(\w+):\s?\w+/;
 	let matches = 1;
+	while(matches > 0){ // Function type setters
+		const textMatch = text.match(reg);
+		if(!textMatch || textMatch?.length === 0) break;
+
+		text = text.replace(textMatch[0], textMatch[1]);
+
+		matches = (text.match(reg)?.length || 0);
+	}
+
+	await wait(100);
+	console.log("Replacing variables...");
+	reg = /(\w[a-zA-Z0-9]+)\s?=\s?/;
+	matches = 1;
 	while(matches > 0){ // Setting variables
 		const textMatch = text.match(reg);
 		if(!textMatch || textMatch?.length === 0) break;
@@ -55,7 +69,7 @@ const convertData = async (text) => {
 		matches = (text.match(reg)?.length || 0);
 	}
 
-	await wait(300);
+	await wait(100);
 	console.log("Replacing if statements...");
 	reg = /if\((.*)\):/;
 	matches = 1;
@@ -68,7 +82,7 @@ const convertData = async (text) => {
 		matches = (text.match(reg)?.length || 0);
 	}
 
-	await wait(300);
+	await wait(100);
 	console.log("Replacing while statements...");
 	reg = /while\((.*?)\):/;
 	matches = 1;
@@ -81,7 +95,7 @@ const convertData = async (text) => {
 		matches = (text.match(reg)?.length || 0);
 	}
 
-	await wait(300);
+	await wait(100);
 	console.log("Replacing len() statements...");
 	reg = /len\((.*?)\)/;
 	matches = 1;
@@ -94,7 +108,7 @@ const convertData = async (text) => {
 		matches = (text.match(reg)?.length || 0);
 	}
 
-	await wait(300);
+	await wait(100);
 	console.log("Replacing String.join(Array) statements...");
 	reg = /(\w+)\.join\((.*?)\)/;
 	matches = 1;
@@ -107,26 +121,26 @@ const convertData = async (text) => {
 		matches = (text.match(reg)?.length || 0);
 	}
 
-	await wait(300);
+	await wait(100);
 	console.log("Adding spaces...");
-	reg = /def((.|\n|\r|\r\n)*?\n)(\w)/;
+	reg = /(\s+)?def((.|\n|\r|\r\n)*?\n)(\w)/;
 	matches = 1;
 	while(matches > 0){ // Add a space before and after all functions
 		const textMatch = text.match(reg);
 		if(!textMatch || textMatch?.length === 0) break;
 
-		text = text.replace(textMatch[0], `\n\nDECLARE FUNCTION${textMatch[1]}\n\n${textMatch[3]}`);
+		text = text.replace(textMatch[0], `\n\n${textMatch[1]}DECLARE FUNCTION${textMatch[2]}\n\n${textMatch[4]}`);
 
 		matches = (text.match(reg)?.length || 0);
 	}
 
-	text = text.replace(/\n/g, "\n\n"); // Add a gap between all lines)
+	text = text.replace(/\n/g, "\n\n"); // Add a gap between all lines
 	text = text.replace(/(\n|\r|\r\n){4,4}/g, "\n\n") // Fix up big gaps
 		.replace(/(\n|\r|\r\n){7,7}/g, "\n\n\n\n\n")
 		.replace(/(\n|\r|\r\n){5}/g, "\n\n\n\n")
 		.replace(/^/, "Converted via PyToPseudo - https://github.com/Multarix/PyToPseudo\n\n");
 
-	await wait(300);
+	await wait(100);
 	return text;
 };
 
@@ -135,4 +149,3 @@ convertData(originalScript).then(txt => {
 	fs.writeFileSync("pseudo.txt", txt, { encoding: "utf8" });
 	console.log("Done!");
 });
-
