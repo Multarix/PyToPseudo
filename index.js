@@ -39,7 +39,8 @@ const convertData = async (text) => {
 		.replace(/eval\(/g, "EVAL(") // Eval functions
 		.replace(/\.append\(/g, ".add(") // Append -> 'add"
 		.replace(/import/g, "IMPORT") // Imports
-		.replace(/re/g, "REGEX"); // Regular Expressions
+		.replace(/([\s]re$|re\.|re;)/gm, " REGEX") // Regular Expressions
+		.replace(/  /g, " "); // Remove any double spaces
 
 
 	await wait(100);
